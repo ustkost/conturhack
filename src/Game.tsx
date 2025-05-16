@@ -1,3 +1,4 @@
+import { GameMap } from "./components/GameMap";
 import { useGameStore } from "./hooks/useGameStore";
 
 export default function Game() {
@@ -11,7 +12,7 @@ export default function Game() {
 
   return (
     <div>
-      {/* Тут игра */}
+      <GameMap />
       <button onClick={finishGame}>Закончить игру</button>
     </div>
   );
