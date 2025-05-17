@@ -38,6 +38,7 @@ export const CanvasGame: React.FC = () => {
 
   const directionRef = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
 	const [effectActive, setEffectActive] = useState(false);
+	const [isInitialized, setIsInitialized] = useState(false);
 
   const generateBerryPosition = () => {
     const emptyCells: { x: number; y: number }[] = [];
@@ -152,6 +153,7 @@ export const CanvasGame: React.FC = () => {
       { x: ROWS - 2, y: COLS - 2, type: "CHASER", originalType: "CHASER" }
     ]);
     generateBerryPosition();
+		setIsInitialized(true);
   }, []);
 
    // Остальной код без изменений, добавим отрисовку призраков
@@ -205,7 +207,7 @@ export const CanvasGame: React.FC = () => {
 			// Отрисовка ягодки
 			if (berryPosition) {
 				ctx.beginPath();
-				ctx.fillStyle = effectActive ? "#FF69B4" : "#FF0000";
+				ctx.fillStyle = "blue";
 				ctx.arc(
 					berryPosition.y * CELL_SIZE + CELL_SIZE / 2,
 					berryPosition.x * CELL_SIZE + CELL_SIZE / 2,
@@ -284,6 +286,37 @@ export const CanvasGame: React.FC = () => {
 	useEffect(() => {
 		console.log("Berry position:", berryPosition);
 	}, [berryPosition]);
+
+	useEffect(() => {
+		for (const g of ghosts) {
+			if (g.x == player.x && g.y == player.y) {
+				if (effectActive) {
+					setGhosts(prev => prev.filter(ghost => ghost !== g));
+				} else {
+					// Респавн игрока
+					setPlayer({ x: 7, y: 7 });
+					// Сброс направления движения
+					directionRef.current = { dx: 0, dy: 0 };
+
+					setGhosts(prev => 
+						prev.map(ghost => ({
+							...ghost,
+							x: [1, 1, ROWS-2, ROWS-2][prev.indexOf(ghost)],
+							y: [1, COLS-2, 1, COLS-2][prev.indexOf(ghost)],
+							type: ghost.originalType
+						}))
+					);
+				}
+			}
+		}
+	}, [player, ghosts]);
+
+	useEffect(() => {
+		if (isInitialized && ghosts.length == 0) {
+			// next level
+			alert("Level Complete! Next Level!");
+		}
+	}, [ghosts, isInitialized])
 
   return (
     <div className="flex justify-center items-center h-screen bg-black">
