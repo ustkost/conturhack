@@ -1,7 +1,7 @@
-import EndScreen from "./EndScreen"
-import Game from "./Game"
+import EndScreen from "./components/EndScreen"
+import Game from "./components/Game"
+import StartScreen from "./components/StartScreen"
 import { useGameStore } from "./hooks/useGameStore"
-import StartScreen from "./StartScreen"
 
 function App() {
 	const screen = useGameStore((s) => s.screen)

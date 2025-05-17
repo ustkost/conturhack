@@ -1,4 +1,4 @@
-import { useGameStore } from "./hooks/useGameStore";
+import { useGameStore } from "../hooks/useGameStore";
 
 export default function EndScreen() {
   const score = useGameStore((s) => s.score);

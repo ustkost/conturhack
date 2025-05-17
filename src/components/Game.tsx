@@ -1,5 +1,5 @@
-import { GameMap } from "./components/GameMap";
-import { useGameStore } from "./hooks/useGameStore";
+import { useGameStore } from "../hooks/useGameStore";
+import { CanvasGame } from "./CanvasGame";
 
 export default function Game() {
   const setScreen = useGameStore((s) => s.setScreen);
@@ -12,7 +12,7 @@ export default function Game() {
 
   return (
     <div>
-      <GameMap />
+      <CanvasGame />
       <button onClick={finishGame}>Закончить игру</button>
     </div>
   );

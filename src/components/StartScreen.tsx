@@ -1,4 +1,4 @@
-import { useGameStore } from "./hooks/useGameStore";
+import { useGameStore } from "../hooks/useGameStore";
 
 export default function StartScreen() {
   const setScreen = useGameStore((s) => s.setScreen);
