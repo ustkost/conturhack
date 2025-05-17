@@ -1,15 +1,10 @@
-import React, { useRef, useEffect } from "react";
-import { useGameStore } from "../hooks/useGameStore";
+import React, { useRef, useEffect, useState } from "react";
+import { useGameStore, type Ghost } from "../hooks/useGameStore";
 
 const CELL_SIZE = 24;
 const ROWS = 15;
 const COLS = 15;
-
-type Ghost = {
-  x: number;
-  y: number;
-  type: "RANDOM" | "CHASER" | "SHY";
-};
+const BERRY_TIMEOUT = 5000; // 5 секунд эффекта
 
 // Генерация карты
 const generateMap = (): string[][] => {
@@ -32,12 +27,38 @@ const map = generateMap();
 
 export const CanvasGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const player = useGameStore((s) => s.player);
-  const setPlayer = useGameStore((s) => s.setPlayer);
-  const ghosts = useGameStore((s) => s.ghosts);
-  const setGhosts = useGameStore((s) => s.setGhosts);
+	const {
+		player,
+    ghosts,
+    berryPosition,
+    setPlayer,
+    setGhosts,
+    setBerryPosition
+  } = useGameStore();
 
   const directionRef = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
+	const [effectActive, setEffectActive] = useState(false);
+
+  const generateBerryPosition = () => {
+    const emptyCells: { x: number; y: number }[] = [];
+    
+    for (let i = 0; i < ROWS; i++) {
+      for (let j = 0; j < COLS; j++) {
+        if (
+          map[i][j] === "E" &&
+          !ghosts.some(g => g.x === i && g.y === j) &&
+          (player.x !== i || player.y !== j)
+        ) {
+          emptyCells.push({ x: i, y: j });
+        }
+      }
+    }
+    
+    if (emptyCells.length > 0) {
+      const randomPos = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+      setBerryPosition(randomPos);
+    }
+  };
 
   // ИИ для призраков
   const moveGhost = (ghost: Ghost): Ghost => {
@@ -121,17 +142,19 @@ export const CanvasGame: React.FC = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  useEffect(() => {
-    // Инициализация призраков
-    setGhosts([
-      { x: 1, y: 1, type: "CHASER" },
-      { x: 1, y: COLS - 2, type: "RANDOM" },
-      { x: ROWS - 2, y: 1, type: "SHY" },
-      { x: ROWS - 2, y: COLS - 2, type: "RANDOM" },
-    ]);
-  }, [setGhosts]);
 
-  // Остальной код без изменений, добавим отрисовку призраков
+	// Инициализация призраков и ягодки
+  useEffect(() => {
+    setGhosts([
+      { x: 1, y: 1, type: "CHASER", originalType: "CHASER" },
+      { x: 1, y: COLS - 2, type: "CHASER", originalType: "CHASER" },
+      { x: ROWS - 2, y: 1, type: "CHASER", originalType: "CHASER" },
+      { x: ROWS - 2, y: COLS - 2, type: "CHASER", originalType: "CHASER" }
+    ]);
+    generateBerryPosition();
+  }, []);
+
+   // Остальной код без изменений, добавим отрисовку призраков
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -178,10 +201,24 @@ export const CanvasGame: React.FC = () => {
         );
         ctx.fill();
       });
-    };
+
+			// Отрисовка ягодки
+			if (berryPosition) {
+				ctx.beginPath();
+				ctx.fillStyle = effectActive ? "#FF69B4" : "#FF0000";
+				ctx.arc(
+					berryPosition.y * CELL_SIZE + CELL_SIZE / 2,
+					berryPosition.x * CELL_SIZE + CELL_SIZE / 2,
+					CELL_SIZE / 3,
+					0,
+					2 * Math.PI
+				);
+				ctx.fill();
+			}
+		};
 
     draw();
-  }, [player, ghosts]);
+  }, [player, ghosts, berryPosition, effectActive]);
 
   // Добавим интервал для движения призраков
   useEffect(() => {
@@ -192,26 +229,61 @@ export const CanvasGame: React.FC = () => {
     return () => clearInterval(ghostInterval);
   }, [setGhosts]);
 
-  // Оригинальный код для движения игрока
+  // Логика движения игрока и подбора ягодки
   useEffect(() => {
     const interval = setInterval(() => {
       const { dx, dy } = directionRef.current;
-      const newX = player.x + dx;
-      const newY = player.y + dy;
+      
+      setPlayer((prev) => {
+        const newX = prev.x + dx;
+        const newY = prev.y + dy;
+        
+        // Проверка на подбор ягодки
+        if (berryPosition && newX === berryPosition.x && newY === berryPosition.y) {
+          setBerryPosition(null);
+          setEffectActive(true);
+          
+          // Меняем тип призраков на SHY
+          setGhosts(prevGhosts => 
+            prevGhosts.map(g => ({
+              ...g,
+              type: "SHY"
+            }))
+          );
+          
+          // Возвращаем исходное состояние через таймаут
+          setTimeout(() => {
+            setGhosts(prevGhosts => 
+              prevGhosts.map(g => ({
+                ...g,
+                type: g.originalType
+              }))
+            );
+            setEffectActive(false);
+            generateBerryPosition();
+          }, BERRY_TIMEOUT);
+        }
 
-      if (
-        newX >= 0 &&
-        newX < ROWS &&
-        newY >= 0 &&
-        newY < COLS &&
-        map[newX][newY] !== "W"
-      ) {
-        setPlayer({ x: newX, y: newY });
-      }
+        // Проверка валидности движения
+        if (
+          newX >= 0 &&
+          newX < ROWS &&
+          newY >= 0 &&
+          newY < COLS &&
+          map[newX][newY] !== "W"
+        ) {
+          return { x: newX, y: newY };
+        }
+        return prev;
+      });
     }, 200);
 
     return () => clearInterval(interval);
-  }, [player, setPlayer]);
+  }, [berryPosition]);
+
+	useEffect(() => {
+		console.log("Berry position:", berryPosition);
+	}, [berryPosition]);
 
   return (
     <div className="flex justify-center items-center h-screen bg-black">
