@@ -8,4 +8,4 @@ Disclaimer:
 3. А теперь - за работу в мир программистов!
 
 
-# ДЕПЛОЙ https://contrurhack.vercel.app
+# ДЕПЛОЙ https://conturhack.vercel.app
