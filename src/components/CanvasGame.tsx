@@ -1,29 +1,61 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useGameStore, type Ghost } from "../hooks/useGameStore";
 
-const CELL_SIZE = 50;
-const ROWS = 15;
-const COLS = 15;
+const CELL_SIZE = 32;
+const ROWS = 29;
+const COLS = 28;
 const BERRY_TIMEOUT = 5000; // 5 секунд эффекта
 
 // Генерация карты
-const generateMap = (): string[][] => {
-  let a = Array.from({ length: ROWS }, (_, i) =>
-    Array.from({ length: COLS }, (_, j) => {
-      if (i === 0 || j === 0 || i === ROWS - 1 || j === COLS - 1) return "W";
-      return "E";
-    })
-  );
-  a[5][5] = "W";
-  a[5][6] = "W";
-  a[5][7] = "W";
-  a[5][9] = "W";
-  a[5][10] = "W";
-  a[5][11] = "W";
-  return a;
-};
+// const generateMap = (): string[][] => {
+//   let a = Array.from({ length: ROWS }, (_, i) =>
+//     Array.from({ length: COLS }, (_, j) => {
+//       if (i === 0 || j === 0 || i === ROWS - 1 || j === COLS - 1) return "W";
+//       return "E";
+//     })
+//   );
+//   a[5][5] = "W";
+//   a[5][6] = "W";
+//   a[5][7] = "W";
+//   a[5][9] = "W";
+//   a[5][10] = "W";
+//   a[5][11] = "W";
+//   return a;
+// };
+//
+// const map = generateMap();
 
-const map = generateMap();
+const map = [
+            ['W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W'],
+            ['W','N','N','N','N','N','N','N','N','N','N','N','N','W','W','N','N','N','N','N','N','N','N','N','N','N','N','W'],
+            ['W','N','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','N','W'],
+            ['W','N','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','N','W'],
+            ['W','N','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','N','W'],
+            ['W','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','W'],
+            ['W','N','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','N','W'],
+            ['W','N','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','N','W'],
+            ['W','N','N','N','N','N','N','W','W','N','N','N','N','W','W','N','N','N','N','W','W','N','N','N','N','N','N','W'],
+            ['W','W','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','W','W'],
+            ['W','W','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','W','W'],
+            ['W','W','W','W','W','W','N','W','W','N','N','N','N','N','N','N','N','N','N','W','W','N','W','W','W','W','W','W'],
+            ['W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W'],
+            ['W','N','N','N','N','N','N','N','N','N','W','W','W','W','W','W','W','W','N','N','N','N','N','N','N','N','N','W'],
+            ['W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W'],
+            ['W','W','W','W','W','W','N','W','W','N','N','N','N','N','N','N','N','N','N','W','W','N','W','W','W','W','W','W'],
+            ['W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W'],
+            ['W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W'],
+            ['W','N','N','N','N','N','N','N','N','N','N','N','N','W','W','N','N','N','N','N','N','N','N','N','N','N','N','W'],
+            ['W','N','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','N','W'],
+            ['W','N','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','N','W'],
+            ['W','N','N','N','W','W','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','W','W','N','N','N','W'],
+            ['W','W','W','N','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','N','W','W','W'],
+            ['W','W','W','N','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','N','W','W','W'],
+            ['W','N','N','N','N','N','N','W','W','N','N','N','N','W','W','N','N','N','N','W','W','N','N','N','N','N','N','W'],
+            ['W','N','W','W','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','W','W','N','W'],
+            ['W','N','W','W','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','W','W','N','W'],
+            ['W','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','W'],
+            ['W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W'],
+        ];
 
 export const CanvasGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);

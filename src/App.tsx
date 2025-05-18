@@ -7,11 +7,12 @@ function App() {
 	const screen = useGameStore((s) => s.screen)
 
 	return (
-		<>
+		<div className="font-pixeled">
+		Eshkere
 		  {screen === 'menu' && <StartScreen />}
 			{screen === 'game' && <Game />}
 			{screen === 'result' && <EndScreen />}
-		</>
+		</div>
 	)
 }
 

@@ -25,7 +25,7 @@ interface GameState {
 export const useGameStore = create<GameState>((set) => ({
   screen: 'menu',
   score: 0,
-	player: { x: 7, y: 7 },
+	player: { x: 11, y: 13 },
   ghosts: [],
   direction: null,
 	berryPosition: null,
