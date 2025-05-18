@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useGameStore, type Ghost } from "../hooks/useGameStore";
 
-const CELL_SIZE = 32;
+const CELL_SIZE = 30;
 const ROWS = 29;
 const COLS = 28;
 const BERRY_TIMEOUT = 5000; // 5 секунд эффекта
@@ -79,7 +79,7 @@ export const CanvasGame: React.FC = () => {
   const addLog = (msg: string) => {
     setLogs(prev => {
       const next = [...prev, msg];
-      return next.slice(-30); // Ограничим последние 30 сообщений
+      return next.slice(-15); // Ограничим последние 30 сообщений
     });
 	}
 
@@ -347,9 +347,9 @@ export const CanvasGame: React.FC = () => {
 					addLog("turtle.eat(ghost)")
 					setGhosts(prev => prev.filter(ghost => ghost !== g));
 				} else {
-					addLog("ghost.eat(turtle); turtle.respawn()")
+					addLog("ghost.eat(turtle) turtle.respawn()")
 					// Респавн игрока
-					setPlayer({ x: 7, y: 7 });
+					setPlayer({ x: 11, y: 13 });
 					// Сброс направления движения
 					directionRef.current = { dx: 0, dy: 0 };
 
@@ -373,20 +373,22 @@ export const CanvasGame: React.FC = () => {
 	}, [ghosts, isInitialized])
 
   return (
-		<div className="flex flex-col w-full h-screen p-4 bg-gray-900 text-white">
-			<div className="flex">
+		<div className="flex flex-col w-full h-screen p-4 bg-gray-900 text-white mx-auto">
+			<div className="text-7xl text-center">
+				PAC-PYTURTLE
+			</div>
+			<div className="flex justify-center">
       <canvas
         ref={canvasRef}
         width={COLS * CELL_SIZE}
         height={ROWS * CELL_SIZE}
         className="border border-white"
       />
-      <div className="ml-4 flex flex-col w-1/3 bg-gray-800 rounded p-4 overflow-y-auto max-h-full">
-        <div className="text-lg font-semibold mb-2">Console</div>
-        <div className="flex flex-col space-y-1 text-sm font-mono">
+      <div className="ml-4 flex flex-col w-1/3 border-4 border-blue-600 rounded p-4 overflow-y-auto max-h-full">
+        <div className="flex flex-col space-y-1 text-sm">
           {logs.map((log, i) => (
-            <div key={i} className="text-green-300 text-xl">
-              {log}
+            <div key={i} className="text-5xl">
+              - {log}
             </div>
           ))}
           <div ref={logEndRef} />
@@ -394,42 +396,42 @@ export const CanvasGame: React.FC = () => {
       </div>
 			</div>
 			{/* Управление кнопками */}
-			<div className="mt-4 flex justify-center items-center text-9xl">
+			<div className="mt-4 flex justify-center items-center text-6xl">
 				
 				<button
 					onClick={() => {
 						directionRef.current = {dx: 0, dy: -1}
 						addLog("turtle.left()")
 					}}
-					className="rounded w-16 h-16"
+					className="border-4 border-blue-600 p-6"
 				>
-					⬅️
+					turtle.left()
 				</button>
 				<button onClick={() => {
 						directionRef.current = { dx: -1, dy: 0 };
 						addLog("turtle.up()")
 					}}
-					className="rounded w-16 h-16 ml-24"
+					className="border-4 border-blue-600 p-6 ml-4"
 				>
-					⬆️
+					turtle.up()
 				</button>
 				<button
 					onClick={() => {
 						directionRef.current = {dx: 1, dy: 0}
 						addLog("turtle.down()")
 					}}
-					className="rounded w-16 h-16 ml-24"
+					className="border-4 border-blue-600 p-6 ml-4"
 				>
-					⬇️
+					turtle.down()
 				</button>
 				<button
 					onClick={() => {
 						directionRef.current = {dx: 0, dy: 1}
 						addLog("turtle.right()")
 					}}
-					className="rounded w-16 h-16 ml-24"
+					className="border-4 border-blue-600 p-6 ml-4"
 				>
-					➡️
+					turtle.right()
 				</button>
 			</div>
     </div>
