@@ -2,12 +2,16 @@ import React, { useRef, useEffect, useState } from "react";
 import { useGameStore, type Ghost } from "../hooks/useGameStore";
 import playerSpriteSrc from "../assets/player.png";
 import ghostSpriteSrc from "../assets/ghost.png";
+import mapSpriteSrc from "../assets/map.png";
+import pythonSpriteSrc from "../assets/python.png";
+import cppSpriteSrc from "../assets/cpp.png";
+import jsSpriteSrc from "../assets/js.png";
 
 // const CELL_SIZE = Math.floor(window.innerHeight * 0.7);
-const CELL_SIZE = 32;
+const CELL_SIZE = 30;
 const ROWS = 29;
 const COLS = 28;
-const BERRY_TIMEOUT = 5000; // 5 секунд эффекта
+const BERRY_TIMEOUT = 10000; // 10 секунд эффекта
 
 // Генерация карты
 // const generateMap = (): string[][] => {
@@ -58,7 +62,28 @@ const map = [
             ['W','N','W','W','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','W','W','N','W'],
             ['W','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','W'],
             ['W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W'],
-        ];
+];
+	
+const techInfo = {
+  python: {
+    name: "Python",
+    description: "Вы находите Python! Это высокоуровневый язык с динамической типизацией. Широко используется в вебе, Data Science и AI.",
+    logo: pythonSpriteSrc, // Используем существующий импорт
+    color: "from-blue-800 to-blue-600"
+  },
+  js: {
+    name: "JavaScript",
+    description: "Вы находите JavaScript! Это язык для интерактивных веб-страниц. Основа фронтенда и серверный (Node.js).",
+    logo: jsSpriteSrc,
+    color: "from-yellow-800 to-yellow-600"
+  },
+  cpp: {
+    name: "C++",
+    description: "Вы находите C++! Это компилируемый язык общего назначения. Используется в играх и системном программировании.",
+    logo: cppSpriteSrc,
+    color: "from-pink-800 to-pink-600"
+  },
+};
 
 export const CanvasGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -81,6 +106,15 @@ export const CanvasGame: React.FC = () => {
 
 	const [playerImage, setPlayerImage] = useState<HTMLImageElement | null>(null);
 	const [ghostImage, setGhostImage] = useState<HTMLImageElement | null>(null);
+	const [mapImage, setMapImage] = useState<HTMLImageElement | null>(null);
+	const [pythonImage, setPythonImage] = useState<HTMLImageElement | null>(null);
+	const [jsImage, setJsImage] = useState<HTMLImageElement | null>(null);
+	const [cppImage, setCppImage] = useState<HTMLImageElement | null>(null);
+	
+	const [berryTech, setBerryTech] = useState<string>("");
+
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isPaused, setIsPaused] = useState(false);
 
 	useEffect(() => {
 		const pImg = new Image();
@@ -90,6 +124,23 @@ export const CanvasGame: React.FC = () => {
 		const gImg = new Image();
 		gImg.src = ghostSpriteSrc;
 		gImg.onload = () => setGhostImage(gImg);
+		
+		const mImg = new Image();
+		mImg.src = mapSpriteSrc;
+		mImg.onload = () => setMapImage(mImg);
+
+		const pyImg = new Image();
+		pyImg.src = pythonSpriteSrc;
+		pyImg.onload = () => setPythonImage(pyImg);
+		
+		
+		const jsImg = new Image();
+		jsImg.src = jsSpriteSrc;
+		jsImg.onload = () => setJsImage(jsImg);
+		
+		const cppImg = new Image();
+		cppImg.src = cppSpriteSrc;
+		cppImg.onload = () => setCppImage(cppImg);
 	}, []);
 
   const addLog = (msg: string) => {
@@ -118,6 +169,14 @@ export const CanvasGame: React.FC = () => {
       const randomPos = emptyCells[Math.floor(Math.random() * emptyCells.length)];
       setBerryPosition(randomPos);
     }
+		const a = Math.random();
+		if (a < 0.33) {
+			setBerryTech("python");
+		} else if (a < 0.66) {
+			setBerryTech("js");
+		} else {
+			setBerryTech("cpp");
+		}
   };
 
   // ИИ для призраков
@@ -188,6 +247,7 @@ export const CanvasGame: React.FC = () => {
   };
 
   useEffect(() => {
+		if (isPaused) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       let dx = 0,
         dy = 0;
@@ -212,7 +272,7 @@ export const CanvasGame: React.FC = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [isPaused]);
 
 
 	// Инициализация призраков и ягодки
@@ -237,13 +297,25 @@ export const CanvasGame: React.FC = () => {
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Отрисовка карты
-      for (let i = 0; i < ROWS; i++) {
-        for (let j = 0; j < COLS; j++) {
-          ctx.fillStyle = map[i][j] === "W" ? "#1e40af" : "#000000";
-          ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-        }
-      }
+      
+			if (mapImage) {
+				ctx.drawImage(
+					mapImage,
+					0,
+					0,
+					canvas.width,
+					canvas.height,
+				);
+			}
+			// // Отрисовка карты
+			// ctx.globalAlpha = 0.5
+   //    for (let i = 0; i < ROWS; i++) {
+   //      for (let j = 0; j < COLS; j++) {
+   //        ctx.fillStyle = map[i][j] === "W" ? "#1e40af" : "#000000";
+   //        ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+   //      }
+   //    }
+			// ctx.globalAlpha = 1
 
       // Игрок
       // ctx.beginPath();
@@ -261,8 +333,8 @@ export const CanvasGame: React.FC = () => {
 					playerImage,
 					player.y * CELL_SIZE,
 					player.x * CELL_SIZE,
-					CELL_SIZE,
-					CELL_SIZE
+					Math.floor(CELL_SIZE * 1.2),
+					Math.floor(CELL_SIZE * 1.2)
 				);
 			}
 
@@ -273,8 +345,8 @@ export const CanvasGame: React.FC = () => {
 							ghostImage,
 							ghost.y * CELL_SIZE,
 							ghost.x * CELL_SIZE,
-							CELL_SIZE,
-							CELL_SIZE
+							Math.floor(CELL_SIZE * 1.2),
+							Math.floor(CELL_SIZE * 1.2)
 						);
 					}
         // ctx.beginPath();
@@ -295,16 +367,19 @@ export const CanvasGame: React.FC = () => {
 
 			// Отрисовка ягодки
 			if (berryPosition) {
-				ctx.beginPath();
-				ctx.fillStyle = "blue";
-				ctx.arc(
-					berryPosition.y * CELL_SIZE + CELL_SIZE / 2,
-					berryPosition.x * CELL_SIZE + CELL_SIZE / 2,
-					CELL_SIZE / 3,
-					0,
-					2 * Math.PI
-				);
-				ctx.fill();
+				let image;
+				if (berryTech == "python") image = pythonImage;
+				else if (berryTech == "js") image = jsImage;
+				else if (berryTech == "cpp") image = cppImage;
+				if (image) {
+					ctx.drawImage(
+						image,
+						berryPosition.y * CELL_SIZE,
+						berryPosition.x * CELL_SIZE,
+						Math.floor(CELL_SIZE * 1.2),
+						Math.floor(CELL_SIZE * 1.2)
+					);
+				}
 			}
 		};
 
@@ -314,15 +389,17 @@ export const CanvasGame: React.FC = () => {
   // Добавим интервал для движения призраков
   useEffect(() => {
     const ghostInterval = setInterval(() => {
+			if (isPaused) return;
       setGhosts((prev) => prev.map(moveGhost));
     }, 500);
 
     return () => clearInterval(ghostInterval);
-  }, [setGhosts]);
+  }, [setGhosts, isPaused]);
 
   // Логика движения игрока и подбора ягодки
   useEffect(() => {
     const interval = setInterval(() => {
+			if (isPaused) return;
       const { dx, dy } = directionRef.current;
       
       setPlayer((prev) => {
@@ -334,6 +411,9 @@ export const CanvasGame: React.FC = () => {
 					addLog("berry.eat()")
           setBerryPosition(null);
           setEffectActive(true);
+					setIsModalOpen(true);
+					setIsPaused(true);
+					directionRef.current = {dx: 0, dy: 0}
           
           // Меняем тип призраков на SHY
           setGhosts(prevGhosts => 
@@ -345,6 +425,7 @@ export const CanvasGame: React.FC = () => {
           
           // Возвращаем исходное состояние через таймаут
           setTimeout(() => {
+						if (isPaused) return;
             setGhosts(prevGhosts => 
               prevGhosts.map(g => ({
                 ...g,
@@ -371,8 +452,10 @@ export const CanvasGame: React.FC = () => {
       });
     }, 200);
 
-    return () => clearInterval(interval);
-  }, [berryPosition]);
+    return () => {
+			clearInterval(interval);
+		}
+  }, [berryPosition, isPaused]);
 
 	useEffect(() => {
 		for (const g of ghosts) {
@@ -407,7 +490,7 @@ export const CanvasGame: React.FC = () => {
 	}, [ghosts, isInitialized])
 
   return (
-		<div className="flex flex-col w-full h-screen p-4 bg-gray-900 text-white mx-auto">
+		<div className="flex flex-col w-full h-screen p-4 text-white mx-auto bg-black">
 			<div className="text-7xl text-center">
 				PAC-PYTURTLE
 			</div>
@@ -416,9 +499,8 @@ export const CanvasGame: React.FC = () => {
         ref={canvasRef}
         width={COLS * CELL_SIZE}
         height={ROWS * CELL_SIZE}
-        className="border border-white"
       />
-      <div className="ml-4 flex flex-col w-1/3 border-4 border-blue-600 rounded p-4 overflow-y-auto max-h-full">
+      <div className="ml-4 flex flex-col w-1/3 border-4 border-blue-900 rounded p-4 overflow-y-auto max-h-full">
         <div className="flex flex-col space-y-1 text-sm">
           {logs.map((log, i) => (
             <div key={i} className="text-4xl">
@@ -437,7 +519,7 @@ export const CanvasGame: React.FC = () => {
 						directionRef.current = {dx: 0, dy: -1}
 						addLog("turtle.left()")
 					}}
-					className="border-4 border-blue-600 p-6"
+					className="border-4 border-blue-900 p-6"
 				>
 					turtle.left()
 				</button>
@@ -445,7 +527,7 @@ export const CanvasGame: React.FC = () => {
 						directionRef.current = { dx: -1, dy: 0 };
 						addLog("turtle.up()")
 					}}
-					className="border-4 border-blue-600 p-6 ml-4"
+					className="border-4 border-blue-900 p-6 ml-4"
 				>
 					turtle.up()
 				</button>
@@ -454,7 +536,7 @@ export const CanvasGame: React.FC = () => {
 						directionRef.current = {dx: 1, dy: 0}
 						addLog("turtle.down()")
 					}}
-					className="border-4 border-blue-600 p-6 ml-4"
+					className="border-4 border-blue-900 p-6 ml-4"
 				>
 					turtle.down()
 				</button>
@@ -463,11 +545,62 @@ export const CanvasGame: React.FC = () => {
 						directionRef.current = {dx: 0, dy: 1}
 						addLog("turtle.right()")
 					}}
-					className="border-4 border-blue-600 p-6 ml-4"
+					className="border-4 border-blue-900 p-6 ml-4"
 				>
 					turtle.right()
 				</button>
 			</div>
+			{isModalOpen && (
+				<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+					<div className={`bg-gradient-to-br ${techInfo[berryTech]?.color} rounded-xl border-4 border-white/30 shadow-2xl max-w-2xl w-full overflow-hidden`}>
+						<div className="flex flex-col md:flex-row">
+							{/* Логотип языка */}
+							<div className="bg-white/10 p-8 flex items-center justify-center md:w-1/3">
+								{berryTech === "python" && pythonImage && (
+									<img 
+										src={pythonSpriteSrc} 
+										alt="Python" 
+										className="w-32 h-32 object-contain animate-bounce-slow"
+									/>
+								)}
+								{berryTech === "js" && jsImage && (
+									<img 
+										src={jsSpriteSrc} 
+										alt="JavaScript" 
+										className="w-32 h-32 object-contain animate-bounce-slow"
+									/>
+								)}
+								{berryTech === "cpp" && cppImage && (
+									<img 
+										src={cppSpriteSrc} 
+										alt="C++" 
+										className="w-32 h-32 object-contain animate-bounce-slow"
+									/>
+								)}
+							</div>
+							
+							{/* Текстовая информация */}
+							<div className="p-8 flex-1">
+								<h2 className="text-4xl mb-6 font-bold text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
+									{techInfo[berryTech]?.name}
+								</h2>
+								<p className="text-xl mb-8 text-white/90 leading-relaxed">
+									{techInfo[berryTech]?.description}
+								</p>
+								<button
+									onClick={() => {
+										setIsModalOpen(false);
+										setIsPaused(false);
+									}}
+									className="w-full bg-white/20 hover:bg-white/30 text-white py-4 rounded-lg text-xl transition-all duration-300 font-bold uppercase tracking-wide shadow-lg hover:scale-[1.02]"
+								>
+									Продолжить
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
     </div>
    );
 };
