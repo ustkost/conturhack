@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useGameStore, type Ghost } from "../hooks/useGameStore";
 
-const CELL_SIZE = 24;
+const CELL_SIZE = 50;
 const ROWS = 15;
 const COLS = 15;
 const BERRY_TIMEOUT = 5000; // 5 секунд эффекта
@@ -33,12 +33,23 @@ export const CanvasGame: React.FC = () => {
     berryPosition,
     setPlayer,
     setGhosts,
-    setBerryPosition
+    setBerryPosition,
+		setScreen
   } = useGameStore();
 
   const directionRef = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
 	const [effectActive, setEffectActive] = useState(false);
 	const [isInitialized, setIsInitialized] = useState(false);
+
+  const [logs, setLogs] = useState<string[]>([]);
+  const logEndRef = useRef<HTMLDivElement>(null);
+
+  const addLog = (msg: string) => {
+    setLogs(prev => {
+      const next = [...prev, msg];
+      return next.slice(-30); // Ограничим последние 30 сообщений
+    });
+	}
 
   const generateBerryPosition = () => {
     const emptyCells: { x: number; y: number }[] = [];
@@ -132,10 +143,22 @@ export const CanvasGame: React.FC = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       let dx = 0,
         dy = 0;
-      if (e.key === "ArrowUp" || e.key === "w") dx = -1;
-      else if (e.key === "ArrowDown" || e.key === "s") dx = 1;
-      else if (e.key === "ArrowLeft" || e.key === "a") dy = -1;
-      else if (e.key === "ArrowRight" || e.key === "d") dy = 1;
+      if (e.key === "ArrowUp" || e.key === "w") {
+				addLog("turtle.up()")
+				dx = -1;
+			}
+      else if (e.key === "ArrowDown" || e.key === "s") {
+				addLog("turtle.down()")
+				dx = 1;
+			}
+      else if (e.key === "ArrowLeft" || e.key === "a") {
+				addLog("turtle.left()")
+				dy = -1;
+			}
+      else if (e.key === "ArrowRight" || e.key === "d") {
+				addLog("turtle.right()")
+				dy = 1;
+			}
       directionRef.current = { dx, dy };
     };
 
@@ -242,6 +265,7 @@ export const CanvasGame: React.FC = () => {
         
         // Проверка на подбор ягодки
         if (berryPosition && newX === berryPosition.x && newY === berryPosition.y) {
+					addLog("berry.eat()")
           setBerryPosition(null);
           setEffectActive(true);
           
@@ -263,6 +287,7 @@ export const CanvasGame: React.FC = () => {
             );
             setEffectActive(false);
             generateBerryPosition();
+						addLog("berry.spawn(random())")
           }, BERRY_TIMEOUT);
         }
 
@@ -284,15 +309,13 @@ export const CanvasGame: React.FC = () => {
   }, [berryPosition]);
 
 	useEffect(() => {
-		console.log("Berry position:", berryPosition);
-	}, [berryPosition]);
-
-	useEffect(() => {
 		for (const g of ghosts) {
 			if (g.x == player.x && g.y == player.y) {
 				if (effectActive) {
+					addLog("turtle.eat(ghost)")
 					setGhosts(prev => prev.filter(ghost => ghost !== g));
 				} else {
+					addLog("ghost.eat(turtle); turtle.respawn()")
 					// Респавн игрока
 					setPlayer({ x: 7, y: 7 });
 					// Сброс направления движения
@@ -313,19 +336,70 @@ export const CanvasGame: React.FC = () => {
 
 	useEffect(() => {
 		if (isInitialized && ghosts.length == 0) {
-			// next level
-			alert("Level Complete! Next Level!");
+			setScreen("result")
 		}
 	}, [ghosts, isInitialized])
 
   return (
-    <div className="flex justify-center items-center h-screen bg-black">
+		<div className="flex flex-col w-full h-screen p-4 bg-gray-900 text-white">
+			<div className="flex">
       <canvas
         ref={canvasRef}
         width={COLS * CELL_SIZE}
         height={ROWS * CELL_SIZE}
-        className="border-4 border-white"
+        className="border border-white"
       />
+      <div className="ml-4 flex flex-col w-1/3 bg-gray-800 rounded p-4 overflow-y-auto max-h-full">
+        <div className="text-lg font-semibold mb-2">Console</div>
+        <div className="flex flex-col space-y-1 text-sm font-mono">
+          {logs.map((log, i) => (
+            <div key={i} className="text-green-300 text-xl">
+              {log}
+            </div>
+          ))}
+          <div ref={logEndRef} />
+        </div>
+      </div>
+			</div>
+			{/* Управление кнопками */}
+			<div className="mt-4 flex justify-center items-center text-9xl">
+				
+				<button
+					onClick={() => {
+						directionRef.current = {dx: 0, dy: -1}
+						addLog("turtle.left()")
+					}}
+					className="rounded w-16 h-16"
+				>
+					⬅️
+				</button>
+				<button onClick={() => {
+						directionRef.current = { dx: -1, dy: 0 };
+						addLog("turtle.up()")
+					}}
+					className="rounded w-16 h-16 ml-24"
+				>
+					⬆️
+				</button>
+				<button
+					onClick={() => {
+						directionRef.current = {dx: 1, dy: 0}
+						addLog("turtle.down()")
+					}}
+					className="rounded w-16 h-16 ml-24"
+				>
+					⬇️
+				</button>
+				<button
+					onClick={() => {
+						directionRef.current = {dx: 0, dy: 1}
+						addLog("turtle.right()")
+					}}
+					className="rounded w-16 h-16 ml-24"
+				>
+					➡️
+				</button>
+			</div>
     </div>
-  );
+   );
 };
