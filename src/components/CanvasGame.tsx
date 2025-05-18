@@ -7,10 +7,12 @@ import pythonSpriteSrc from "../assets/python.png";
 import cppSpriteSrc from "../assets/cpp.png";
 import jsSpriteSrc from "../assets/js.png";
 
-// const CELL_SIZE = Math.floor(window.innerHeight * 0.7);
-const CELL_SIZE = 30;
 const ROWS = 29;
 const COLS = 28;
+const CELL_SIZE = Math.floor(Math.min(
+  window.innerHeight * 0.7 / ROWS,
+  window.innerWidth * 0.7 / COLS
+));
 const BERRY_TIMEOUT = 10000; // 10 секунд эффекта
 
 // Генерация карты
@@ -333,8 +335,8 @@ export const CanvasGame: React.FC = () => {
 					playerImage,
 					player.y * CELL_SIZE,
 					player.x * CELL_SIZE,
-					Math.floor(CELL_SIZE * 1.2),
-					Math.floor(CELL_SIZE * 1.2)
+					CELL_SIZE,
+					CELL_SIZE,
 				);
 			}
 
@@ -345,8 +347,8 @@ export const CanvasGame: React.FC = () => {
 							ghostImage,
 							ghost.y * CELL_SIZE,
 							ghost.x * CELL_SIZE,
-							Math.floor(CELL_SIZE * 1.2),
-							Math.floor(CELL_SIZE * 1.2)
+							CELL_SIZE,
+							CELL_SIZE,
 						);
 					}
         // ctx.beginPath();
@@ -494,7 +496,7 @@ export const CanvasGame: React.FC = () => {
 			<div className="text-7xl text-center">
 				PAC-PYTURTLE
 			</div>
-			<div className="flex justify-center">
+			<div className="flex flex-col md:flex-row justify-center items-center">
       <canvas
         ref={canvasRef}
         width={COLS * CELL_SIZE}
