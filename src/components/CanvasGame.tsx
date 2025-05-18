@@ -7,8 +7,8 @@ import pythonSpriteSrc from "../assets/python.png";
 import cppSpriteSrc from "../assets/cpp.png";
 import jsSpriteSrc from "../assets/js.png";
 
-const ROWS = 29;
-const COLS = 28;
+const ROWS = 28;
+const COLS = 29;
 const CELL_SIZE = Math.floor(Math.min(
   window.innerHeight * 0.8 / ROWS,
   window.innerWidth * 0.7 / COLS
@@ -38,38 +38,36 @@ const DEATH_SCORE = -1000;
 //
 // const map = generateMap();
 
-const map = [
-            ['W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W'],
-            ['W','N','N','N','N','N','N','N','N','N','N','N','N','W','W','N','N','N','N','N','N','N','N','N','N','N','N','W'],
-            ['W','N','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','N','W'],
-            ['W','N','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','N','W'],
-            ['W','N','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','N','W'],
-            ['W','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','W'],
-            ['W','N','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','N','W'],
-            ['W','N','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','N','W'],
-            ['W','N','N','N','N','N','N','W','W','N','N','N','N','W','W','N','N','N','N','W','W','N','N','N','N','N','N','W'],
-            ['W','W','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','W','W'],
-            ['W','W','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','W','W'],
-            ['W','W','W','W','W','W','N','W','W','N','N','N','N','N','N','N','N','N','N','W','W','N','W','W','W','W','W','W'],
-            ['W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W'],
-            ['W','N','N','N','N','N','N','N','N','N','W','W','W','W','W','W','W','W','N','N','N','N','N','N','N','N','N','W'],
-            ['W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W'],
-            ['W','W','W','W','W','W','N','W','W','N','N','N','N','N','N','N','N','N','N','W','W','N','W','W','W','W','W','W'],
-            ['W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W'],
-            ['W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W'],
-            ['W','N','N','N','N','N','N','N','N','N','N','N','N','W','W','N','N','N','N','N','N','N','N','N','N','N','N','W'],
-            ['W','N','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','N','W'],
-            ['W','N','W','W','W','W','N','W','W','W','W','W','N','W','W','N','W','W','W','W','W','N','W','W','W','W','N','W'],
-            ['W','N','N','N','W','W','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','W','W','N','N','N','W'],
-            ['W','W','W','N','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','N','W','W','W'],
-            ['W','W','W','N','W','W','N','W','W','N','W','W','W','W','W','W','W','W','N','W','W','N','W','W','N','W','W','W'],
-            ['W','N','N','N','N','N','N','W','W','N','N','N','N','W','W','N','N','N','N','W','W','N','N','N','N','N','N','W'],
-            ['W','N','W','W','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','W','W','N','W'],
-            ['W','N','W','W','W','W','W','W','W','W','W','W','N','W','W','N','W','W','W','W','W','W','W','W','W','W','N','W'],
-            ['W','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','W'],
-            ['W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W'],
+const map = [ // 28x29
+            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], // 1
+            ['W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W'], // 2
+            ['W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W'], // 3
+            ['W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W'], // 4
+            ['W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W'], // 5
+            ['W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W'], // 6
+            ['W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W'], // 7
+            ['W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W', 'W', 'N', 'N', 'N', 'N', 'W', 'N', 'N', 'N', 'N', 'W', 'W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W'], // 8
+            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], // 9
+            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], // 10
+            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], // 11
+            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'P', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], // 12
+            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], // 13
+            ['N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N'], // 15
+            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], // 15
+            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], // 16
+            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], // 17
+            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], // 15
+            ['W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W'], // 2
+            ['W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W'], // 4
+            ['W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'N', 'W'], // 3
+            ['W', 'N', 'N', 'N', 'W', 'W', 'W', "N', 'N', 'N', 'N', 'N", 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W', 'W', 'W'],
+            ['W', 'W', 'W', 'N', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'N', 'W', 'W', 'W', 'N', 'W', 'W', 'W'], // 3
+            ['W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W', 'N', 'N', 'N', 'N', 'W', 'W', 'W', 'N', 'N', 'N', 'N', 'W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W'], // 2
+            ['W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W'], // 2
+            ['W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'N', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'N', 'W'], // 2
+            ['W', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'W'], // 2
+            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], // 1
 ];
-	
 const techInfo: Record<string, any> = {
   python: {
     name: "Python",
@@ -124,6 +122,8 @@ export const CanvasGame: React.FC = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isPaused, setIsPaused] = useState(false);
 	const [time, setTime] = useState(0);
+
+	const [angle, setAngle] = useState(0);
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -250,7 +250,7 @@ export const CanvasGame: React.FC = () => {
         newX < ROWS &&
         newY >= 0 &&
         newY < COLS &&
-        map[newX][newY] !== "W"
+        map[newX][newY] !== "W" && map[newX][newY] !== "P"
       );
     });
 
@@ -271,18 +271,22 @@ export const CanvasGame: React.FC = () => {
         dy = 0;
       if (e.key === "ArrowUp" || e.key === "w") {
 				addLog("turtle.up()")
+				setAngle(0);
 				dx = -1;
 			}
       else if (e.key === "ArrowDown" || e.key === "s") {
 				addLog("turtle.down()")
+				setAngle(Math.PI);
 				dx = 1;
 			}
       else if (e.key === "ArrowLeft" || e.key === "a") {
 				addLog("turtle.left()")
+				setAngle(3 * Math.PI / 2);
 				dy = -1;
 			}
       else if (e.key === "ArrowRight" || e.key === "d") {
 				addLog("turtle.right()")
+				setAngle(Math.PI / 2);
 				dy = 1;
 			}
       directionRef.current = { dx, dy };
@@ -298,14 +302,15 @@ export const CanvasGame: React.FC = () => {
     setGhosts([
       { x: 1, y: 1, type: "CHASER", originalType: "CHASER" },
       { x: 1, y: COLS - 2, type: "CHASER", originalType: "CHASER" },
-      // { x: ROWS - 2, y: 1, type: "CHASER", originalType: "CHASER" },
-      // { x: ROWS - 2, y: COLS - 2, type: "CHASER", originalType: "CHASER" }
+      { x: ROWS - 2, y: 1, type: "CHASER", originalType: "CHASER" },
+      { x: ROWS - 2, y: COLS - 2, type: "CHASER", originalType: "CHASER" },
+      { x: ROWS - 4, y: COLS - 4, type: "CHASER", originalType: "CHASER" },
+      { x: 2, y: COLS - 6, type: "CHASER", originalType: "CHASER" }
     ]);
     generateBerryPosition();
 		setIsInitialized(true);
   }, []);
 
-   // Остальной код без изменений, добавим отрисовку призраков
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -346,15 +351,38 @@ export const CanvasGame: React.FC = () => {
       //   2 * Math.PI
       // );
       // ctx.fill();
+			// if (playerImage) {
+			// 	ctx.drawImage(
+			// 		playerImage,
+			// 		player.y * CELL_SIZE - CELL_SIZE * 0.1,
+			// 		player.x * CELL_SIZE - CELL_SIZE * 0.1,
+			// 		CELL_SIZE * 1.2,
+			// 		CELL_SIZE * 1.2,
+			// 	);
+			// }
 			if (playerImage) {
-				ctx.drawImage(
-					playerImage,
-					player.y * CELL_SIZE,
-					player.x * CELL_SIZE,
-					CELL_SIZE,
-					CELL_SIZE,
-				);
-			}
+	ctx.save(); // Сохраняем текущее состояние канваса
+
+	// Переносим систему координат в центр черепахи
+	const centerX = player.y * CELL_SIZE + CELL_SIZE / 2;
+	const centerY = player.x * CELL_SIZE + CELL_SIZE / 2;
+	ctx.translate(centerX, centerY);
+
+	// Поворачиваем координатную систему
+	ctx.rotate(angle);
+
+	// Рисуем изображение со смещением от центра
+	const size = CELL_SIZE * 1.2;
+	ctx.drawImage(
+		playerImage,
+		-size / 2,
+		-size / 2,
+		size,
+		size
+	);
+
+	ctx.restore(); // Возвращаем прежнее состояние канваса
+}
 
       // Призраки
       ghosts.forEach((ghost) => {
@@ -394,8 +422,8 @@ export const CanvasGame: React.FC = () => {
 						image,
 						berryPosition.y * CELL_SIZE,
 						berryPosition.x * CELL_SIZE,
-						Math.floor(CELL_SIZE * 1.2),
-						Math.floor(CELL_SIZE * 1.2)
+						CELL_SIZE,
+						CELL_SIZE,
 					);
 				}
 			}
@@ -487,18 +515,9 @@ export const CanvasGame: React.FC = () => {
 					addLog("ghost.eat(turtle) turtle.respawn()")
 					setScore(score + DEATH_SCORE)
 					// Респавн игрока
-					setPlayer({ x: 11, y: 13 });
-					// Сброс направления движения
+					setPlayer({ x: 13, y: 14 });
+					// Сброс на4равления движения
 					directionRef.current = { dx: 0, dy: 0 };
-
-					setGhosts(prev => 
-						prev.map(ghost => ({
-							...ghost,
-							x: [1, 1, ROWS-2, ROWS-2][prev.indexOf(ghost)],
-							y: [1, COLS-2, 1, COLS-2][prev.indexOf(ghost)],
-							type: ghost.originalType
-						}))
-					);
 					// Сброс направления движения
 				}
 			}
@@ -507,16 +526,14 @@ export const CanvasGame: React.FC = () => {
 
 	useEffect(() => {
 		if (isInitialized && ghosts.length == 0) {
-			alert(score);
 			setScore(Math.ceil(score / (time / 60)));
 			setScreen("result")
-			alert(time);
 		}
 	}, [ghosts, isInitialized])
 
   return (
 		<div className="flex flex-col w-full h-screen p-4 text-white mx-auto bg-black">
-			<div className="text-9xl text-center">
+			<div className="text-9xl text-center mb-4">
 				PAC-PYTURTLE
 			</div>
 			<div className="flex justify-center">

@@ -7,3 +7,36 @@
     letter-spacing: -0.5px;
   }
 }
+
+.pacman-btn {
+  @apply text-3xl py-4 px-8 bg-blue-900 text-yellow-400 rounded-full 
+         border-4 border-yellow-400 transition-all
+         hover:bg-blue-800 hover:scale-105 
+         active:scale-95 shadow-lg hover:shadow-yellow-400/40;
+}
+
+.neon-text-blue {
+  text-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
+}
+
+.ghost {
+  @apply w-16 h-16 rounded-full;
+  position: relative;
+}
+
+.ghost::after {
+  content: '';
+  @apply absolute -bottom-2 w-full h-3;
+  background: inherit;
+}
+
+.ghost.red {
+  background: #FF0000;
+  animation: ghost-color-change 3s infinite;
+}
+
+/* Анимации для призраков */
+@keyframes ghost-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+}
