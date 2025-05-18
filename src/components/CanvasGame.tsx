@@ -162,10 +162,12 @@ export const CanvasGame: React.FC = () => {
 	}, []);
 
   const addLog = (msg: string) => {
-    setLogs(prev => {
-      const next = [...prev, msg];
-      return next.slice(-15); // Ограничим последние 15 сообщений
-    });
+		if (logs[logs.length - 1] != msg) {
+			setLogs(prev => {
+				const next = [...prev, msg];
+				return next.slice(-20);
+			});
+		}
 	}
 
   const generateBerryPosition = () => {
@@ -512,7 +514,8 @@ export const CanvasGame: React.FC = () => {
 					setGhosts(prev => prev.filter(ghost => ghost !== g));
 					setScore(score + GHOST_SCORE)
 				} else {
-					addLog("ghost.eat(turtle) turtle.respawn()")
+					addLog("ghost.eat(turtle)")
+					addLog("turtle.respawn()")
 					setScore(score + DEATH_SCORE)
 					// Респавн игрока
 					setPlayer({ x: 13, y: 14 });
@@ -542,7 +545,7 @@ export const CanvasGame: React.FC = () => {
         width={COLS * CELL_SIZE}
         height={ROWS * CELL_SIZE}
       />
-      <div className="ml-4 flex flex-col w-1/3 border-4 border-blue-900 rounded p-4 overflow-y-auto max-h-full">
+      <div className="ml-4 flex flex-col w-1/3 border-4 border-blue-900 rounded p-4 overflow-y-auto h-[calc(100vh-280px)]">
         <div className="flex flex-col space-y-1 text-sm">
           {logs.map((log, i) => (
             <div key={i} className="text-4xl">
