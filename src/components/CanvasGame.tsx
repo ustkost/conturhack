@@ -124,6 +124,7 @@ export const CanvasGame: React.FC = () => {
 	const [time, setTime] = useState(0);
 
 	const [angle, setAngle] = useState(0);
+	const [showHelp, setShowHelp] = useState(false);
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -611,6 +612,39 @@ export const CanvasGame: React.FC = () => {
 					</div>
 				</div>
 			)}
+
+<div className="fixed top-4 right-4 z-50">
+  <div 
+    className="relative"
+    onMouseEnter={() => setShowHelp(true)}
+    onMouseLeave={() => setShowHelp(false)}
+  >
+    {/* Иконка вопроса */}
+    <div className="w-12 h-12 bg-blue-900 rounded-full flex items-center justify-center border-4 border-yellow-400">
+      <span className="text-3xl text-yellow-400 font-bold">?</span>
+    </div>
+
+    {/* Выпадающая подсказка */}
+    {showHelp && (
+      <div className="absolute top-14 right-0 w-96 bg-blue-900/95 p-6 rounded-lg border-4 border-yellow-400 shadow-xl animate-fade-in">
+        <h3 className="text-2xl text-yellow-400 mb-4 font-pacman">
+          Правила игры
+        </h3>
+				<div>
+				ATTENTION! Вы попали в мир программистов, и теперь ваша жизнь стала немного сложнее, будто маленькая черепашка в этом большом мире, на которую наваливаются баги и дедлайны. Помогите себе стать сильнее и справляться со всеми трудностями. Ловите бусты и сражайтесь против недосыпа и проблем вместе со знаниями.
+
+Disclaimer:
+
+    Остерегайтесь багов 🐞 и делайнов ❌, пока вы не получили достаточно знаний.
+    У вас пошел таймер.
+    Пока время буста не истекло, поймайте язык программирования, чтобы справиться с опасностями.
+    А теперь - за работу в мир программистов!
+
+				</div>
+      </div>
+    )}
+  </div>
+</div>
     </div>
    );
 };
