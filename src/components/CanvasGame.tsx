@@ -1,7 +1,10 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useGameStore, type Ghost } from "../hooks/useGameStore";
+import playerSpriteSrc from "../assets/player.png";
+import ghostSpriteSrc from "../assets/ghost.png";
 
-const CELL_SIZE = 30;
+// const CELL_SIZE = Math.floor(window.innerHeight * 0.7);
+const CELL_SIZE = 32;
 const ROWS = 29;
 const COLS = 28;
 const BERRY_TIMEOUT = 5000; // 5 секунд эффекта
@@ -76,6 +79,19 @@ export const CanvasGame: React.FC = () => {
   const [logs, setLogs] = useState<string[]>([]);
   const logEndRef = useRef<HTMLDivElement>(null);
 
+	const [playerImage, setPlayerImage] = useState<HTMLImageElement | null>(null);
+	const [ghostImage, setGhostImage] = useState<HTMLImageElement | null>(null);
+
+	useEffect(() => {
+		const pImg = new Image();
+		pImg.src = playerSpriteSrc;
+		pImg.onload = () => setPlayerImage(pImg);
+
+		const gImg = new Image();
+		gImg.src = ghostSpriteSrc;
+		gImg.onload = () => setGhostImage(gImg);
+	}, []);
+
   const addLog = (msg: string) => {
     setLogs(prev => {
       const next = [...prev, msg];
@@ -89,7 +105,7 @@ export const CanvasGame: React.FC = () => {
     for (let i = 0; i < ROWS; i++) {
       for (let j = 0; j < COLS; j++) {
         if (
-          map[i][j] === "E" &&
+          map[i][j] === "N" &&
           !ghosts.some(g => g.x === i && g.y === j) &&
           (player.x !== i || player.y !== j)
         ) {
@@ -230,33 +246,51 @@ export const CanvasGame: React.FC = () => {
       }
 
       // Игрок
-      ctx.beginPath();
-      ctx.fillStyle = "yellow";
-      ctx.arc(
-        player.y * CELL_SIZE + CELL_SIZE / 2,
-        player.x * CELL_SIZE + CELL_SIZE / 2,
-        CELL_SIZE / 2.5,
-        0,
-        2 * Math.PI
-      );
-      ctx.fill();
+      // ctx.beginPath();
+      // ctx.fillStyle = "yellow";
+      // ctx.arc(
+      //   player.y * CELL_SIZE + CELL_SIZE / 2,
+      //   player.x * CELL_SIZE + CELL_SIZE / 2,
+      //   CELL_SIZE / 2.5,
+      //   0,
+      //   2 * Math.PI
+      // );
+      // ctx.fill();
+			if (playerImage) {
+				ctx.drawImage(
+					playerImage,
+					player.y * CELL_SIZE,
+					player.x * CELL_SIZE,
+					CELL_SIZE,
+					CELL_SIZE
+				);
+			}
 
       // Призраки
       ghosts.forEach((ghost) => {
-        ctx.beginPath();
-        ctx.fillStyle = ghost.type === "CHASER" 
-          ? "red" 
-          : ghost.type === "SHY" 
-          ? "green" 
-          : "pink";
-        ctx.arc(
-          ghost.y * CELL_SIZE + CELL_SIZE / 2,
-          ghost.x * CELL_SIZE + CELL_SIZE / 2,
-          CELL_SIZE / 2.5,
-          0,
-          2 * Math.PI
-        );
-        ctx.fill();
+				if (ghostImage) {
+						ctx.drawImage(
+							ghostImage,
+							ghost.y * CELL_SIZE,
+							ghost.x * CELL_SIZE,
+							CELL_SIZE,
+							CELL_SIZE
+						);
+					}
+        // ctx.beginPath();
+        // ctx.fillStyle = ghost.type === "CHASER" 
+        //   ? "red" 
+        //   : ghost.type === "SHY" 
+        //   ? "green" 
+        //   : "pink";
+        // ctx.arc(
+        //   ghost.y * CELL_SIZE + CELL_SIZE / 2,
+        //   ghost.x * CELL_SIZE + CELL_SIZE / 2,
+        //   CELL_SIZE / 2.5,
+        //   0,
+        //   2 * Math.PI
+        // );
+        // ctx.fill();
       });
 
 			// Отрисовка ягодки
@@ -387,7 +421,7 @@ export const CanvasGame: React.FC = () => {
       <div className="ml-4 flex flex-col w-1/3 border-4 border-blue-600 rounded p-4 overflow-y-auto max-h-full">
         <div className="flex flex-col space-y-1 text-sm">
           {logs.map((log, i) => (
-            <div key={i} className="text-5xl">
+            <div key={i} className="text-4xl">
               - {log}
             </div>
           ))}
