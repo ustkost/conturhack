@@ -507,6 +507,10 @@ export const CanvasGame: React.FC = () => {
   }, [berryPosition, isPaused]);
 
 	useEffect(() => {
+		logEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	}, [logs]);
+
+	useEffect(() => {
 		for (const g of ghosts) {
 			if (g.x == player.x && g.y == player.y) {
 				if (effectActive) {
@@ -548,7 +552,7 @@ export const CanvasGame: React.FC = () => {
       <div className="ml-4 flex flex-col w-1/3 border-4 border-blue-900 rounded p-4 overflow-y-auto h-[calc(100vh-280px)]">
         <div className="flex flex-col space-y-1 text-sm">
           {logs.map((log, i) => (
-            <div key={i} className="text-4xl">
+            <div key={i} className="text-4xl truncate">
               - {log}
             </div>
           ))}

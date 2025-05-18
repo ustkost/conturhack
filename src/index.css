@@ -40,3 +40,12 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-30px); }
 }
+
+/* Убираем скроллбары */
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  overflow: hidden;
+}
