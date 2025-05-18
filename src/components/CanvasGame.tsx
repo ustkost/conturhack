@@ -10,10 +10,14 @@ import jsSpriteSrc from "../assets/js.png";
 const ROWS = 29;
 const COLS = 28;
 const CELL_SIZE = Math.floor(Math.min(
-  window.innerHeight * 0.7 / ROWS,
+  window.innerHeight * 0.8 / ROWS,
   window.innerWidth * 0.7 / COLS
 ));
 const BERRY_TIMEOUT = 10000; // 10 секунд эффекта
+
+const BERRY_SCORE = 500;
+const GHOST_SCORE = 500;
+const DEATH_SCORE = -1000;
 
 // Генерация карты
 // const generateMap = (): string[][] => {
@@ -93,10 +97,12 @@ export const CanvasGame: React.FC = () => {
 		player,
     ghosts,
     berryPosition,
+		score,
     setPlayer,
     setGhosts,
     setBerryPosition,
-		setScreen
+		setScreen,
+		setScore
   } = useGameStore();
 
   const directionRef = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
@@ -117,6 +123,16 @@ export const CanvasGame: React.FC = () => {
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isPaused, setIsPaused] = useState(false);
+	const [time, setTime] = useState(0);
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			if(!isPaused && isInitialized) {
+				setTime(prev => prev + 1);
+			}
+		}, 1000);
+		return () => clearInterval(interval);
+	}, [isPaused, isInitialized])
 
 	useEffect(() => {
 		const pImg = new Image();
@@ -148,7 +164,7 @@ export const CanvasGame: React.FC = () => {
   const addLog = (msg: string) => {
     setLogs(prev => {
       const next = [...prev, msg];
-      return next.slice(-15); // Ограничим последние 30 сообщений
+      return next.slice(-15); // Ограничим последние 15 сообщений
     });
 	}
 
@@ -282,8 +298,8 @@ export const CanvasGame: React.FC = () => {
     setGhosts([
       { x: 1, y: 1, type: "CHASER", originalType: "CHASER" },
       { x: 1, y: COLS - 2, type: "CHASER", originalType: "CHASER" },
-      { x: ROWS - 2, y: 1, type: "CHASER", originalType: "CHASER" },
-      { x: ROWS - 2, y: COLS - 2, type: "CHASER", originalType: "CHASER" }
+      // { x: ROWS - 2, y: 1, type: "CHASER", originalType: "CHASER" },
+      // { x: ROWS - 2, y: COLS - 2, type: "CHASER", originalType: "CHASER" }
     ]);
     generateBerryPosition();
 		setIsInitialized(true);
@@ -393,7 +409,7 @@ export const CanvasGame: React.FC = () => {
     const ghostInterval = setInterval(() => {
 			if (isPaused) return;
       setGhosts((prev) => prev.map(moveGhost));
-    }, 500);
+    }, 400);
 
     return () => clearInterval(ghostInterval);
   }, [setGhosts, isPaused]);
@@ -411,6 +427,7 @@ export const CanvasGame: React.FC = () => {
         // Проверка на подбор ягодки
         if (berryPosition && newX === berryPosition.x && newY === berryPosition.y) {
 					addLog("berry.eat()")
+					setScore(score + BERRY_SCORE);
           setBerryPosition(null);
           setEffectActive(true);
 					setIsModalOpen(true);
@@ -452,7 +469,7 @@ export const CanvasGame: React.FC = () => {
         }
         return prev;
       });
-    }, 200);
+    }, 300);
 
     return () => {
 			clearInterval(interval);
@@ -465,8 +482,10 @@ export const CanvasGame: React.FC = () => {
 				if (effectActive) {
 					addLog("turtle.eat(ghost)")
 					setGhosts(prev => prev.filter(ghost => ghost !== g));
+					setScore(score + GHOST_SCORE)
 				} else {
 					addLog("ghost.eat(turtle) turtle.respawn()")
+					setScore(score + DEATH_SCORE)
 					// Респавн игрока
 					setPlayer({ x: 11, y: 13 });
 					// Сброс направления движения
@@ -480,6 +499,7 @@ export const CanvasGame: React.FC = () => {
 							type: ghost.originalType
 						}))
 					);
+					// Сброс направления движения
 				}
 			}
 		}
@@ -487,16 +507,19 @@ export const CanvasGame: React.FC = () => {
 
 	useEffect(() => {
 		if (isInitialized && ghosts.length == 0) {
+			alert(score);
+			setScore(Math.ceil(score / (time / 60)));
 			setScreen("result")
+			alert(time);
 		}
 	}, [ghosts, isInitialized])
 
   return (
 		<div className="flex flex-col w-full h-screen p-4 text-white mx-auto bg-black">
-			<div className="text-7xl text-center">
+			<div className="text-9xl text-center">
 				PAC-PYTURTLE
 			</div>
-			<div className="flex flex-col md:flex-row justify-center items-center">
+			<div className="flex justify-center">
       <canvas
         ref={canvasRef}
         width={COLS * CELL_SIZE}
@@ -513,46 +536,7 @@ export const CanvasGame: React.FC = () => {
         </div>
       </div>
 			</div>
-			{/* Управление кнопками */}
-			<div className="mt-4 flex justify-center items-center text-6xl">
-				
-				<button
-					onClick={() => {
-						directionRef.current = {dx: 0, dy: -1}
-						addLog("turtle.left()")
-					}}
-					className="border-4 border-blue-900 p-6"
-				>
-					turtle.left()
-				</button>
-				<button onClick={() => {
-						directionRef.current = { dx: -1, dy: 0 };
-						addLog("turtle.up()")
-					}}
-					className="border-4 border-blue-900 p-6 ml-4"
-				>
-					turtle.up()
-				</button>
-				<button
-					onClick={() => {
-						directionRef.current = {dx: 1, dy: 0}
-						addLog("turtle.down()")
-					}}
-					className="border-4 border-blue-900 p-6 ml-4"
-				>
-					turtle.down()
-				</button>
-				<button
-					onClick={() => {
-						directionRef.current = {dx: 0, dy: 1}
-						addLog("turtle.right()")
-					}}
-					className="border-4 border-blue-900 p-6 ml-4"
-				>
-					turtle.right()
-				</button>
-			</div>
-			{isModalOpen && (
+		{isModalOpen && (
 				<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
 					<div className={`bg-gradient-to-br ${techInfo[berryTech]?.color} rounded-xl border-4 border-white/30 shadow-2xl max-w-2xl w-full overflow-hidden`}>
 						<div className="flex flex-col md:flex-row">
