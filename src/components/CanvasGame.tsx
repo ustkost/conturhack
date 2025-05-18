@@ -64,7 +64,7 @@ const map = [
             ['W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W'],
 ];
 	
-const techInfo = {
+const techInfo: Record<string, any> = {
   python: {
     name: "Python",
     description: "Вы находите Python! Это высокоуровневый язык с динамической типизацией. Широко используется в вебе, Data Science и AI.",
